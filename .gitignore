@@ -1,0 +1,11 @@
+data/Annotations/
+data/mic1_trim_v2/
+data/*.csv
+data/*.html
+data/*.md
+data/*.txt
+data/*/__MACOSX/*
+data/*/__MACOSX/mic1_trim_v2/*
+
+processed_data/*.npy
+
