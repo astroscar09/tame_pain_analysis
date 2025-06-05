@@ -1,0 +1,175 @@
+PhysioNet
+Find
+Share
+About
+News
+Projects
+ ochavez 
+Search
+TAME Pain: Trustworthy AssessMEnt of Pain from Speech and Audio for the Empowerment of Patients 1.0.0
+File: <base>/readme.md (7,062 bytes) 
+# TAME Pain Dataset
+
+Welcome to the TAME Pain Dataset. This dataset comprises annotated speech data collected to study pain levels under various experimental conditions. The data includes audio recordings, metadata about the recordings and participants, and detailed annotations.
+
+## Table of Contents
+
+- [Dataset Overview](#dataset-overview)
+- [Dataset Structure](#dataset-structure)
+- [Accessing the Data](#accessing-the-data)
+- [File Descriptions](#file-descriptions)
+  - [Audio Recordings](#audio-recordings)
+  - [Metadata Files](#metadata-files)
+  - [Annotations](#annotations)
+- [Usage Instructions](#usage-instructions)
+- [Additional Details](#additional-details)
+- [Contact](#contact)
+
+## Dataset Overview
+
+The TAME Pain Dataset consists of 7,039 annotated utterances totaling 311.24 minutes of audio data. Each utterance is labeled with self-reported pain levels and categorized based on the presence or absence of pain, pain severity, and experimental conditions (cold/warm). Additionally, the dataset includes annotations regarding audio quality and disturbances to assist in data preprocessing and analysis.
+
+## Dataset Structure
+
+The dataset is organized into the following main components:
+
+1. **Audio Recordings**
+2. **Metadata Files**
+3. **Annotations**
+
+## Accessing the Data
+
+The TAME Pain Dataset is available on the [PhysioNet](https://physionet.org/) data platform. 
+
+## File Descriptions
+
+### Audio Recordings
+
+- **File:** `mic1_trim_v1.zip`
+- **Description:** Contains 51 subfolders, each representing a participant identified by a unique Participant ID (PID). Each subfolder includes audio recordings in `.wav` format, trimmed using Voice Activity Detection (VAD).
+- **File Naming Convention:** `PID.COND.UTTNUM.UTTID.wav`
+  - **PID:** Participant Identification (e.g., `p12345`)
+  - **COND:** Experimental Condition (`LC`, `LW`, `RC`, `RW`)
+  - **UTTNUM:** Utterance Number (sequential per condition)
+  - **UTTID:** Utterance ID (corresponds to assigned sentence or `99999` for pain statements)
+
+### Metadata Files
+
+1. **Audio Metadata**
+   - **File:** `meta_audio.csv`
+   - **Description:** Contains metadata for each audio file.
+   - **Columns:**
+     - `PID`: Participant Identification
+     - `COND`: Experimental Condition
+     - `UTTNUM`: Utterance Number
+     - `UTTID`: Utterance ID
+     - `PAIN LEVEL`: Raw self-reported pain level
+     - `REVISED PAIN`: Modified pain level aligned with the 1-10 scale
+     - `DURATION`: Duration of the audio file in seconds
+     - `ACTION LABEL`: Quality rating of the audio (0-4)
+     - `NOTES`: Manual annotations and comments
+
+2. **Participant Data**
+   - **File:** `meta_participant.csv`
+   - **Description:** Contains demographic and experimental data for each participant.
+   - **Columns:**
+     - `PID`: Participant Identification
+     - `GENDER`: Self-reported gender
+     - `AGE`: Age in years
+     - `RACE/ETHNICITY`: Self-reported race/ethnicity
+     - `FOLDER SIZE`: Storage size of audio files in megabytes
+     - `NUMBER OF FILES`: Total number of audio files
+     - `TOTAL DURATION`: Total duration of audio files in seconds
+     - `LC`, `LW`, `RC`, `RW`: Completion status of each experimental condition (`1` for completed, `0` for incomplete)
+
+### Annotations
+
+- **Folder:** `Annotations`
+- **Description:** Contains seven CSV files, each representing a distinct annotation category. Utterances can belong to multiple categories.
+
+#### Annotation Files
+
+1. **External Disturbances**
+   - **File:** `External_Disturbances.csv`
+   - **Description:** Records external noises unrelated to participant vocalization.
+   - **Additional Column:** `NOISE RELATION` (Foreground, Background, or Both)
+
+2. **Speech Errors and Disturbances**
+   - **File:** `Speech_Errors_and_Disturbances.csv`
+   - **Description:** Captures speech errors and verbal disturbances.
+
+3. **Audio Cut Out**
+   - **File:** `Audio_Cut_Out.csv`
+   - **Description:** Notes instances where audio was cut, leading to loss of parts of sentences.
+
+4. **Audible Breath**
+   - **File:** `Audible_Breath.csv`
+   - **Description:** Identifies audible inhales/exhales by participants.
+
+5. **No Pain Rating So Copied**
+   - **File:** `No_Pain_Rating_So_Copied.csv`
+   - **Description:** Indicates audio files without a pain rating that were assigned a pain level based on adjacent ratings.
+
+6. **No Assigned Sentence**
+   - **File:** `No_Assigned_Sentence.csv`
+   - **Description:** Marks audio files where the assigned sentence was not spoken.
+
+7. **No Pain Rating**
+   - **File:** `No_Pain_Rating.csv`
+   - **Description:** Lists audio files without any pain rating and no adjacent ratings to copy from.
+
+## Usage Instructions
+
+1. **Download the Dataset:**
+   - Access the dataset via the provided PhysioNet link.
+   - Download the `mic1_trim_v1.zip` file and the associated metadata and annotation files.
+
+2. **Extract Audio Recordings:**
+   - Unzip `mic1_trim_v1.zip` to access participant folders containing `.wav` audio files.
+
+3. **Understand File Naming:**
+   - Use the file naming convention (`PID.COND.UTTNUM.UTTID.wav`) to navigate and identify specific audio files.
+
+4. **Refer to Metadata:**
+   - Utilize `meta_audio.csv` for detailed information about each audio file.
+   - Use `meta_participant.csv` to access participant demographics and condition completion statuses.
+
+5. **Handle Annotations:**
+   - Explore the `Annotations` folder to understand and utilize the various annotation categories.
+   - Multiple annotations for a single file are separated by semicolons in the `NOTES` column.
+
+6. **Data Analysis:**
+   - Leverage the `ACTION LABEL` for filtering audio quality.
+   - Use pain level annotations for classification tasks (Binary, Three-Class, Condition).
+
+## Additional Details
+
+- **Pain Level Adjustments:**
+  - Original pain levels of `0` were relabeled to `1` to maintain a 1-10 scale.
+  - Pain levels are categorized into:
+    - **Binary Task:** No Pain (1-3), Pain (4-10)
+    - **Three-Class Task:** Mild (1-3), Moderate (4-6), Severe (7-10)
+    - **Condition Task:** Warm (`LW`, `RW`), Cold (`LC`, `RC`)
+
+- **Audio Quality Labels:**
+  - `ACTION LABEL` ranges from `0` (highest quality) to `4` (lowest quality), based on the presence of disturbances and errors.
+
+- **Background Noise:**
+  - All recordings have a uniform background fan noise, with varying intensities across participants.
+
+- **Exclusion of Unlabeled Utterances:**
+  - Five utterances without pain ratings were excluded from the dataset.
+
+## License
+
+This dataset is licensed under the [PhysioNet Restricted Health Data License 1.5.0](https://physionet.org/about/licenses/physionet-restricted-health-data-license-150/). By accessing and using this data, you agree to comply with the terms and conditions outlined in the license. Ensure that you have the appropriate permissions and adhere to all restrictions specified by PhysioNet.
+
+
+## Contact
+
+For any questions or support regarding the TAME Pain Dataset, please contact the dataset maintainers at [arya.farahi@austin.utexas.edu](mailto:arya.farahi@austin.utexas.edu).
+PhysioNet is a repository of freely-available medical research data, managed by the MIT Laboratory for Computational Physiology.
+
+Supported by the National Institute of Biomedical Imaging and Bioengineering (NIBIB) under NIH grant number R01EB030362.
+
+For more accessibility options, see the MIT Accessibility Page.

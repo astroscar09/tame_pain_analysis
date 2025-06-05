@@ -6,6 +6,29 @@ data/*.md
 data/*.txt
 data/*/__MACOSX/*
 data/*/__MACOSX/mic1_trim_v2/*
+data/*
 
 processed_data/*.npy
+*.npy
+*.png
+
+.history/
+# Ignore Jupyter Notebook checkpoints
+.ipynb_checkpoints
+# Ignore Python cache files
+__pycache__/
+# Ignore virtual environment directories
+venv/
+# Ignore Python bytecode files
+*.pyc
+# Ignore log files
+*.log
+# Ignore temporary files
+*.tmp
+# Ignore backup files
+*.bak
+# Ignore system files
+.DS_Store
+# Ignore environment files
+.env
 

@@ -30,9 +30,7 @@ def float32_to_int16(x):
     return (x * 32767.).astype(np.int16)
 
 model = laion_clap.CLAP_Module(enable_fusion=False, amodel= 'HTSAT-base')
-model.load_ckpt('/Users/ritwikvashistha/Downloads/music_speech_audioset_epoch_15_esc_89.98.pt') # download the default pretrained checkpoint.
-
-
+model.load_ckpt('/Users/oac466/Downloads/music_speech_audioset_epoch_15_esc_89.98.pt') # download the default pretrained checkpoint.
 
 
 # Path to main folder containing all subfolders
@@ -205,23 +203,23 @@ y_pred_tensor = model(X_test_tensor)
 y_pred = torch.argmax(y_pred_tensor, dim=1)
 
 for pid in random_pid:
-  index = merged_df[merged_df['PID_x'] == pid].index
-  X_test_pid = merged_features.iloc[index,:]
-  X_test_scaled_pid = scaler.transform(X_test_pid)
-  X_test_tensor_pid = torch.tensor(X_test_scaled_pid, dtype=torch.float32)
-  y_pred_tensor_pid = model(X_test_tensor_pid)
-  y_pred_pid = torch.argmax(y_pred_tensor_pid, dim=1).numpy()
-  y_test_pid = labels[index]
-  acc = accuracy_score(y_test_pid, y_pred_pid)
-  auc = roc_auc_score(y_test_pid, y_pred_pid)
-  # f1 = f1_score(y_test_pid, y_pred_pid,average='micro')
+    index = merged_df[merged_df['PID_x'] == pid].index
+    X_test_pid = merged_features.iloc[index,:]
+    X_test_scaled_pid = scaler.transform(X_test_pid)
+    X_test_tensor_pid = torch.tensor(X_test_scaled_pid, dtype=torch.float32)
+    y_pred_tensor_pid = model(X_test_tensor_pid)
+    y_pred_pid = torch.argmax(y_pred_tensor_pid, dim=1).numpy()
+    y_test_pid = labels[index]
+    acc = accuracy_score(y_test_pid, y_pred_pid)
+    auc = roc_auc_score(y_test_pid, y_pred_pid)
+    # f1 = f1_score(y_test_pid, y_pred_pid,average='micro')
 
-  # Print the results
-  print(f"Test Accuracy: {acc * 100:.2f}%")
-  print(f"Test AUC: {auc * 100:.2f}%")
-  # print(f"Test F1 Score: {f1 * 100:.2f}%")
+    # Print the results
+    print(f"Test Accuracy: {acc * 100:.2f}%")
+    print(f"Test AUC: {auc * 100:.2f}%")
+    # print(f"Test F1 Score: {f1 * 100:.2f}%")
 
-  from sklearn.metrics import confusion_matrix, accuracy_score, roc_auc_score, f1_score
+from sklearn.metrics import confusion_matrix, accuracy_score, roc_auc_score, f1_score
 import seaborn as sns
 import matplotlib.pyplot as plt
 
