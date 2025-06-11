@@ -13,14 +13,67 @@ import seaborn as sns
 
 def read_data(file):
 
-    data = pd.read_csv(file)
+    if '.txt' in file:
+        data = pd.read_csv(file, sep=' ')
+    elif '.csv' in file:
+        data = pd.read_csv(file)
+
+    #print(data.columns)
 
     X = data.drop(columns=['Pain']).values
     Y = data[['Pain']].values
 
     return X, Y
 
-def get_data_by_condition(X, y, condition = 'RW/LC'):
+def get_unique_pids():
+
+    data_df = pd.read_csv('Merged_Data.csv')
+    unique_PID = data_df['PID_x'].unique()  # Ensure that the 'PID' column is unique
+    
+    return unique_PID
+
+def get_filtered_index(meta_audio):
+
+    filtered_indices = meta_audio[meta_audio['ACTION LABEL'].isin([0, 1, 2])].index.values
+    return filtered_indices
+
+
+
+def split_data_by_pid(X, y, pids, seed = 43):
+
+    """
+    Splits the dataset into training and test sets based on unique patient IDs.
+    
+    Parameters:
+    X (array-like): Features of the dataset.
+    y (array-like): Labels of the dataset.
+    pid (array-like): Unique patient IDs.
+    
+    Returns:
+    tuple: Training and test data features and labels.
+    """
+
+    data_df = pd.read_csv('Merged_Data.csv')
+
+    #mask = data_df['PID_x'].isin(pid)  # Create a mask for the specified PIDs
+
+    np.random.seed(seed)  # For reproducibility
+
+    training_pid = np.random.choice(pids, size=int(len(pids) * 0.7), replace=False)  # Randomly select 70% of PIDs
+    testing_pid = np.setdiff1d(pids, training_pid)  # The remaining 30% for testing
+
+    training_mask = data_df['PID_x'].isin(training_pid)  # Create a mask for training PIDs
+    testing_mask = data_df['PID_x'].isin(testing_pid)  # Create a mask for testing PIDs
+
+    X_train = X[training_mask]
+    y_train = y[training_mask]
+
+    X_test = X[testing_mask]
+    y_test = y[testing_mask]
+
+    return X_train, y_train, X_test, y_test
+
+def get_data_by_condition(X, y, data_df, condition = 'RW/LC'):
     """
     Filters the dataset based on a specific condition.
     
@@ -33,28 +86,27 @@ def get_data_by_condition(X, y, condition = 'RW/LC'):
     tuple: Filtered features and labels.
     """
 
-    data_df = pd.read_csv('Merged_Data.csv')
-
+    #data_df = pd.read_csv('Merged_Data.csv')
+    mask_rw_lc = ((data_df['COND'] == 'RW') | (data_df['COND'] == 'LC')).values # Ensure that the condition is either RW or LC
+    mask_rc_lw = ((data_df['COND'] == 'RC') | (data_df['COND'] == 'LW')).values # Ensure that the condition is either RC or LW
+   
     if condition == 'RW/LC':
 
-        mask_complete = (data_df[['RW', 'LC']] == 1).all(axis = 1) #this signifies that the people completed the test
-        X_train = X[mask_complete]
-        y_train = y[mask_complete]
+        X_train = X[mask_rw_lc]
+        y_train = y[mask_rw_lc]
 
-        mask_complete1 = (data_df[['RC', 'LW']] == 1).all(axis = 1)
-        X_test = X[mask_complete1]
-        y_test = y[mask_complete1]
+        X_test = X[mask_rc_lw]
+        y_test = y[mask_rc_lw]
 
     elif condition == 'RC/LW':
-        mask_complete = (data_df[['RC', 'LW']] == 1).all(axis = 1)
-        X_train = X[mask_complete]
-        y_train = y[mask_complete]
+        
+        X_train = X[mask_rc_lw]
+        y_train = y[mask_rc_lw]
 
-        mask_complete1 = (data_df[['RW', 'LC']] == 1).all(axis = 1)
-        X_test = X[mask_complete1]
-        y_test = y[mask_complete1]
+      
+        X_test = X[mask_rw_lc]
+        y_test = y[mask_rw_lc]
        
-
     else:
         raise ValueError("Condition must be either 'RW/LC' or 'RC/LW'.")
 
