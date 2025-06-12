@@ -7,6 +7,8 @@ import numpy as np
 from sklearn.model_selection import RandomizedSearchCV
 from scipy.stats import uniform, randint
 from sklearn.metrics import confusion_matrix, accuracy_score, roc_auc_score, f1_score
+import matplotlib.pyplot as plt
+
 
 
 params = {'eta': 0.3, #default learning rate and can change to be between [0-1]
@@ -25,20 +27,12 @@ params = {'eta': 0.3, #default learning rate and can change to be between [0-1]
 
 def load_features():
     
-    df = pd.read_csv('Merged_Features.csv')
+    df = pd.read_csv('processed_data/Merged_Features.csv')
 
     X = df.drop(columns=['Pain'])
     y = df['Pain']
 
     return X, y
-
-
-X, y = load_features()
-
-
-#data = load_iris()
-X_train, X_test, y_train, y_test = train_test_split(X, y , test_size=.2, random_state=42)
-
 
 def explore_hyperparameters(X_train, y_train):
 
@@ -84,7 +78,7 @@ def test_model(bst, X_test):
     # ensure the model is trained
 
     # make predictions
-    y_pred = bst.predict(X_test, output_margin=True)
+    y_pred = bst.predict(X_test)
 
     return y_pred
 
@@ -100,7 +94,7 @@ def compute_shap_values(bst, X_train):
 
     print(np.abs(shap_values.sum(axis=1) + explanation.base_values - pred).max())
 
-    return explanation, shap_values
+    return explainer, explanation, shap_values
 
 def plot_shap_summary(X_train, shap_values, first_n = 10, plot_type = None):
 
@@ -111,30 +105,33 @@ def plot_shap_summary(X_train, shap_values, first_n = 10, plot_type = None):
     shap_display = shap_values[:, top_inds]
 
     shap.summary_plot(shap_display, X_display, plot_type=plot_type)
+    plt.show()
 
 
 def plot_importance_by_feature(shap_values, feature_idx):
 
     # visualize the first prediction's explanation
     shap.plots.waterfall(shap_values[feature_idx])
+    plt.show()
 
 def plot_force_plot(shap_values, feature_idx):
 
     # visualize the first prediction's explanation with a force plot
     shap.plots.force(shap_values[feature_idx])
+    plt.show()
 
-def plot_shap_bar(shap_values, first_n = None):
+def plot_shap_bar(explainer, shap_values, first_n = None):
 
     if first_n is not None:
         mean_abs_shap = np.abs(shap_values).mean(axis=0)
         top_inds = np.argsort(mean_abs_shap)[-first_n:]
         shap_display = shap_values[:, top_inds]
-        shap.plots.bar(shap_display)
+        shap.plots.bar(explainer)
 
     else:
-        shap.plots.bar(shap_values)
+        shap.plots.bar(explainer)
 
-
+    plt.show()
 
 def plot_importance(bst):
 
@@ -147,11 +144,13 @@ def plot_tree(bst, num_trees = 2, ipython = False):
     else:
         xgb.plot_tree(bst, num_trees=num_trees)    
 
+    plt.show()
+
 
 def plot_shap_beeswarm(explanation):
 
     shap.plots.beeswarm(explanation)
-
+    plt.show()
 
 def computing_metrics(y_test, y_pred):
 
@@ -171,3 +170,14 @@ def computing_metrics(y_test, y_pred):
     print(f"Test Accuracy: {acc * 100:.2f}%")
     print(f"Test AUC: {auc * 100:.2f}%")
     print(f"Test F1 Score: {f1_scor * 100:.2f}%")
+
+
+if __name__ == "__main__":
+
+    X, y = load_features()
+    X_train, X_test, y_train, y_test = train_test_split(X, y , test_size=.2, random_state=42)
+
+    bst = train_model(X_train, y_train)
+    y_pred = test_model(bst, X_test)
+    computing_metrics(y_test, y_pred)
+    explainer, explanation, shap_values = compute_shap_values(bst, X_train)
