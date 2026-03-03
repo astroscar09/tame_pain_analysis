@@ -132,15 +132,15 @@ def get_text_embeddings(model, meta_audio):
 
         return embeddings
 
-def get_embeddings(audio_embeddings, filtered_indices, text_embeddings = None):
+def get_embeddings(audio_embeddings, text_embeddings = None):
 
     # Filter embeddings based on the indices
     if text_embeddings is not None:
-        filtered_audio_embeddings = audio_embeddings[filtered_indices]
-        filtered_text_embeddings = text_embeddings[filtered_indices]
+        filtered_audio_embeddings = audio_embeddings
+        filtered_text_embeddings = text_embeddings
         embeddings = np.concatenate((filtered_audio_embeddings, filtered_text_embeddings), axis=1)
     else:
-        embeddings = audio_embeddings[filtered_indices]
+        embeddings = audio_embeddings
     
     df = pd.DataFrame(embeddings)
     return df
@@ -156,13 +156,14 @@ def get_tabular_data(meta_audio, meta_participant, filtered_indices):
     labels= np.array([0 if x < 4 else 1 for x in labels]) # Labels: 0 or 1 for "No Pain"/"Pain"
     merged_df['Pain'] = labels
 
-    tabular_data = merged_df.loc[:, ['GENDER', 'AGE', 'RACE/ETHNICITY', 'TOTAL DURATION (SEC)', 'Pain']]
+    tab_data =  ['GENDER', 'AGE', 'RACE/ETHNICITY', 'TOTAL DURATION (SEC)', 'Audible_Breath',
+        'Audio_Cut_Out', 'External_Disturbances', 'Speech_Errors',
+        'No_Pain_Rating', 'No_Assigned_Sentences', 'No_Pain_So_Copied', 'Pain']
+
+    tabular_data = merged_df.loc[:, tab_data]
     tabular_data = pd.get_dummies(tabular_data, columns=['GENDER', 'RACE/ETHNICITY'], dtype=np.float32)
 
     return tabular_data.iloc[filtered_indices, :].reset_index(drop=True)
-
-
-
 
 def merge_data(df, tabular_data):
 

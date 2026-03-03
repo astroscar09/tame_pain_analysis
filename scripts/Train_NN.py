@@ -7,7 +7,7 @@ import torch
 import torch.nn as nn
 import pandas as pd
 import numpy as np
-from sklearn.metrics import confusion_matrix, accuracy_score, roc_auc_score, f1_score
+
 import matplotlib.pyplot as plt
 import seaborn as sns
 
@@ -24,6 +24,15 @@ def read_data(file):
     Y = data[['Pain']].values
 
     return X, Y
+
+def get_xy_data(df):
+
+    X = df.drop(columns=['Pain']).values
+    Y = df[['Pain']].values
+
+    return X, Y
+
+
 
 def get_unique_pids():
 
@@ -53,7 +62,7 @@ def split_data_by_pid(X, y, pids, seed = 43):
     tuple: Training and test data features and labels.
     """
 
-    data_df = pd.read_csv('Merged_Data.csv')
+    #data_df = pd.read_csv('Merged_Data.csv')
 
     #mask = data_df['PID_x'].isin(pid)  # Create a mask for the specified PIDs
 
